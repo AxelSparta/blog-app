@@ -4,14 +4,14 @@ export const imageValidation = (image, maxSizeInMb) => {
   if (!arrayOfAllowedFileTypes.includes(image.mimetype)) {
     return {
       error: true,
-      message: 'Only image files allowed.'
+      message: 'Image must be a png, jpg or jpeg.'
     }
   }
 
   if (image.size / (1024 * 1024) > maxSizeInMb) {
     return {
       error: true,
-      message: 'Image too large.'
+      message: 'The image size must be less than ' + maxSizeInMb + 'MB.'
     }
   }
 

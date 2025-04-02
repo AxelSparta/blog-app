@@ -8,7 +8,7 @@ export const editUsername = async (req, res) => {
     if (!username || !password) { return res.status(400).json('Some data is missing.') }
 
     // username validation
-    if (!validateUsername(username)) { return res.status(400).json('Invalid username.') }
+    if (!validateUsername(username)) { return res.status(400).json('Username must be between 8 and 30 characters, and must contain only letters, numbers and underscores.') }
 
     const isPasswordCorrect = await user.comparePassword(
       password,

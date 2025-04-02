@@ -17,13 +17,13 @@ export const editPost = async (req, res) => {
     if (!title || !content || !category) { return res.status(400).json('Some data is missing.') }
 
     const titleValidationResult = titleValidation(title)
-    if (titleValidationResult.error) { return res.status(400).json('Invalid title.') }
+    if (titleValidationResult.error) { return res.status(400).json(titleValidationResult.message) }
 
     const contValidationResult = contentValidation(content)
-    if (contValidationResult.error) { return res.status(400).json('Invalid content.') }
+    if (contValidationResult.error) { return res.status(400).json(contValidationResult.message) }
 
     const catValidationResult = categoryValidation(category)
-    if (catValidationResult.error) { return res.status(400).json('Invalid category.') }
+    if (catValidationResult.error) { return res.status(400).json(catValidationResult.message) }
 
     const postToEdit = await Post.findById(id)
     if (!postToEdit) return res.status(404).json('Post not found.')

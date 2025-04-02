@@ -10,20 +10,38 @@ import {
 export const signUp = async (req, res) => {
   try {
     const { username, email, password } = req.body
-    if (!username || !email || !password) { return res.status(400).json('Some data is missing') }
+    if (!username || !email || !password) {
+      return res.status(400).json('Some data is missing')
+    }
     // CHECK EXISTING USER
     // by username
     const resultUsername = await User.find({ username })
-    if (resultUsername.length !== 0) { return res.status(409).json('Username already taken.') }
+    if (resultUsername.length !== 0) {
+      return res.status(409).json('Username already taken.')
+    }
     // by email
     const resultEmail = await User.find({ email })
-    if (resultEmail.length !== 0) { return res.status(409).json('Email already taken.') }
+    if (resultEmail.length !== 0) {
+      return res.status(409).json('Email already taken.')
+    }
 
     // VALIDATIONS
 
-    if (!validateUsername(username)) { return res.status(400).json('Invalid username.') }
+    if (!validateUsername(username)) {
+      return res
+        .status(400)
+        .json(
+          'Username must be between 8 and 30 characters, and must contain only letters, numbers and underscores.'
+        )
+    }
 
-    if (!validatePassword(password)) { return res.status(400).json('Invalid password.') }
+    if (!validatePassword(password)) {
+      return res
+        .status(400)
+        .json(
+          'Password must be between 8 and 30 characters, and must contain one number, one uppercase letter and one lowercase letter.'
+        )
+    }
 
     if (!validateEmail(email)) return res.status(400).json('Invalid email.')
 

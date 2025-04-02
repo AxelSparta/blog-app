@@ -16,12 +16,12 @@ export const createPost = async (req, res) => {
     if (!title || !content || !category) { return res.status(400).json('Some data is missing.') }
 
     const titleResultValidation = titleValidation(title)
-    if (titleResultValidation.error) { return res.status(400).json('Invalid title.') }
+    if (titleResultValidation.error) { return res.status(400).json(titleResultValidation.message) }
     const contResultValidation = contentValidation(content)
-    if (contResultValidation.error) { return res.status(400).json('Invalid content.') }
+    if (contResultValidation.error) { return res.status(400).json(contResultValidation.message) }
 
     const catResultValidation = categoryValidation(category)
-    if (catResultValidation.error) { return res.status(400).json('Invalid category.') }
+    if (catResultValidation.error) { return res.status(400).json(catResultValidation.message) }
 
     let image
     if (req.files && req.files.image) {
