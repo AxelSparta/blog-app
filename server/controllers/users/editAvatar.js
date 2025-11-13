@@ -6,14 +6,20 @@ export const editAvatar = async (req, res) => {
   try {
     const user = req.user
 
-    if (!req.files || !req.files.avatar) { return res.status(400).json('Some data is missing.') }
+    if (!req.files || !req.files.avatar) {
+      return res.status(400).json('Some data is missing.')
+    }
 
     // image validation
     const validationResult = imageValidation(req.files.avatar, 2)
-    if (validationResult.error) { return res.status(400).json(validationResult.message) }
+    if (validationResult.error) {
+      return res.status(400).json(validationResult.message)
+    }
 
     // eliminando avatar antiguo si es que existe
-    if (user.avatar && user.avatar.public_id) { await deleteImage(user.avatar.public_id) }
+    if (user.avatar && user.avatar.public_id) {
+      await deleteImage(user.avatar.public_id)
+    }
 
     // subiendo imagen
     const result = await uploadImage(req.files.avatar.tempFilePath)

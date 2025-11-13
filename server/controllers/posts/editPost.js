@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 import { deleteImage, uploadImage } from '../../libs/cloudinary.js'
-import Post from '../../models/Post.js'
+import Post from '../../schemas/Post.js'
 import { imageValidation } from '../../validations/image.validation.js'
 import {
   categoryValidation,
@@ -14,20 +14,30 @@ export const editPost = async (req, res) => {
     const { title, content, category, image } = req.body
     const { id } = req.params
 
-    if (!title || !content || !category) { return res.status(400).json('Some data is missing.') }
+    if (!title || !content || !category) {
+      return res.status(400).json('Some data is missing.')
+    }
 
     const titleValidationResult = titleValidation(title)
-    if (titleValidationResult.error) { return res.status(400).json(titleValidationResult.message) }
+    if (titleValidationResult.error) {
+      return res.status(400).json(titleValidationResult.message)
+    }
 
     const contValidationResult = contentValidation(content)
-    if (contValidationResult.error) { return res.status(400).json(contValidationResult.message) }
+    if (contValidationResult.error) {
+      return res.status(400).json(contValidationResult.message)
+    }
 
     const catValidationResult = categoryValidation(category)
-    if (catValidationResult.error) { return res.status(400).json(catValidationResult.message) }
+    if (catValidationResult.error) {
+      return res.status(400).json(catValidationResult.message)
+    }
 
     const postToEdit = await Post.findById(id)
     if (!postToEdit) return res.status(404).json('Post not found.')
-    if (postToEdit.userId !== user.id) { return res.status(401).json('Not authorized.') }
+    if (postToEdit.userId !== user.id) {
+      return res.status(401).json('Not authorized.')
+    }
 
     if (image === 'null') {
       // eliminando imagen anterior si existe antes de subir la nueva
@@ -40,7 +50,9 @@ export const editPost = async (req, res) => {
     if (req.files && req.files.image) {
       // img validation
       const imgValidationResult = imageValidation(req.files.image, 2)
-      if (imgValidationResult.error) { return res.status(400).json(imgValidationResult.message) }
+      if (imgValidationResult.error) {
+        return res.status(400).json(imgValidationResult.message)
+      }
       // subiendo imagen
       const result = await uploadImage(req.files.image.tempFilePath)
       // eliminando temp file

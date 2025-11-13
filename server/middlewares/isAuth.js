@@ -1,6 +1,6 @@
-import { JWT_KEY } from '../config.js'
 import jwt from 'jsonwebtoken'
-import User from '../models/User.js'
+import { JWT_KEY } from '../envConfig.js'
+import User from '../schemas/User.js'
 
 export const isAuth = async (req, res, next) => {
   try {

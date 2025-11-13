@@ -1,13 +1,17 @@
 import { deleteImage } from '../../libs/cloudinary.js'
-import Post from '../../models/Post.js'
+import Post from '../../schemas/Post.js'
 
 export const deletePost = async (req, res) => {
   try {
     const user = req.user
     const { id } = req.params
     const postToDelete = await Post.findById(id)
-    if (!postToDelete) { return res.status(404).json({ message: 'Post not found' }) }
-    if (postToDelete.userId !== user.id) { return res.status(401).status('Not authorized.') }
+    if (!postToDelete) {
+      return res.status(404).json({ message: 'Post not found' })
+    }
+    if (postToDelete.userId !== user.id) {
+      return res.status(401).status('Not authorized.')
+    }
 
     await postToDelete.delete()
     if (postToDelete.image) {

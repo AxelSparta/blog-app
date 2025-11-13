@@ -5,10 +5,18 @@ export const editUsername = async (req, res) => {
     const { username, password } = req.body
     const user = req.user
 
-    if (!username || !password) { return res.status(400).json('Some data is missing.') }
+    if (!username || !password) {
+      return res.status(400).json('Some data is missing.')
+    }
 
     // username validation
-    if (!validateUsername(username)) { return res.status(400).json('Username must be between 8 and 30 characters, and must contain only letters, numbers and underscores.') }
+    if (!validateUsername(username)) {
+      return res
+        .status(400)
+        .json(
+          'Username must be between 8 and 30 characters, and must contain only letters, numbers and underscores.'
+        )
+    }
 
     const isPasswordCorrect = await user.comparePassword(
       password,
@@ -17,7 +25,9 @@ export const editUsername = async (req, res) => {
 
     if (!isPasswordCorrect) return res.status(400).json('Incorrect password.')
 
-    if (username === user.username) { return res.status(400).json('The username is the same.') }
+    if (username === user.username) {
+      return res.status(400).json('The username is the same.')
+    }
 
     user.username = username
 
