@@ -5,7 +5,7 @@ import cors from 'cors'
 import fileUpload from 'express-fileupload'
 import { ORIGIN } from './envConfig.js'
 import authRouter from './routes/auth.routes.js'
-// import postsRouter from './routes/posts.routes.js'
+import postsRouter from './routes/posts.routes.js'
 // import userRouter from './routes/users.routes.js'
 const app = express()
 
@@ -36,7 +36,7 @@ app.use(cookieParser())
 
 // routes
 app.use('/api/auth', authRouter)
-// app.use('/api/posts', postsRouter)
+app.use('/api/posts', postsRouter)
 // app.use('/api/users', userRouter)
 
 export default app

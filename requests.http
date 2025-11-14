@@ -2,7 +2,16 @@ POST http://localhost:3000/api/auth/signup HTTP/1.1
 content-type: application/json
 
 {
-    "username": "axel",
-    "email": "axel@gmail.com",
+    "username": "axel1",
+    "email": "axel1@gmail.com",
 		"password": "Aasdasdasd1"
+}
+
+### signIn request
+POST http://localhost:3000/api/auth/signin HTTP/1.1
+content-type: application/json
+
+{
+    "username": "axel1",
+    "password": "Aasdasdasd1"
 }

@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { JWT_KEY } from '../../envConfig.js'
-import { getUserByEmail, getUserByUsername } from '../../models/user.model.js'
-import User from '../../schemas/User.js'
+import { createUser, getUserByEmail, getUserByUsername } from '../../models/user.model.js'
 import { validateUserSignUp } from '../../validations/user.validations.js'
 
 export const signUp = async (req, res) => {
@@ -27,7 +26,7 @@ export const signUp = async (req, res) => {
 
   // CREATING NEW USER
   try {
-    const newUserId = await User.create({ username, email, password })
+    const newUserId = await createUser({ username, email, password })
     const token = jwt.sign({ id: newUserId }, JWT_KEY, {
       expiresIn: '14d'
     })
