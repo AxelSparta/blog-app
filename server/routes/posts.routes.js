@@ -10,13 +10,13 @@ import { isAuth } from '../middlewares/isAuth.js'
 
 const router = Router()
 
-router.get('/posts', getPosts)
-router.get('/posts/user/:id', getPosts)
-router.get('/posts/cat', getPostsCat)
-router.get('/post/:id', getPost)
+router.get('/', getPosts)
+router.get('/user/:id', getPosts)
+router.get('/:id', getPost)
+router.get('/cat', getPostsCat)
 
-router.post('/posts', isAuth, createPost)
-router.put('/posts/:id', isAuth, editPost)
-router.delete('/posts/:id', isAuth, deletePost)
+router.post('/', isAuth, createPost)
+router.put('/:id', isAuth, editPost)
+router.delete('/:id', isAuth, deletePost)
 
 export default router

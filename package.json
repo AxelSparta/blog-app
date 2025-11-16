@@ -24,11 +24,12 @@
     "http-errors": "2.0.0",
     "jsonwebtoken": "9.0.0",
     "mongoose": "6.8.1",
-    "morgan": "1.10.0"
+    "morgan": "1.10.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "nodemon": "2.0.20",
-    "standard": "17.0.0"
+    "standard": "^17.0.0"
   },
   "eslintConfig": {
     "extends": "./node_modules/standard/eslintrc.json"

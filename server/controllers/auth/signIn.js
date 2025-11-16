@@ -1,26 +1,33 @@
-import { JWT_KEY } from '../../config.js'
-import User from '../../models/User.js'
 import jwt from 'jsonwebtoken'
-import {
-  validatePassword,
-  validateUsername
-} from '../../validations/user.validations.js'
+import { JWT_KEY } from '../../envConfig.js'
+import { getUserByUsername } from '../../models/user.model.js'
+import { validateUserSignIn } from '../../validations/user.validations.js'
 
 export const signIn = async (req, res) => {
+  const { success, errors, data } = validateUserSignIn(req.body)
+
+  if (!success) {
+    return res.status(400).json(errors)
+  }
+
+  const { username, password } = data
+
   try {
-    const { username, password } = req.body
+    const user = await getUserByUsername(username)
 
-    if (!username || !password) { return res.status(400).json('Some data is missing.') }
+    if (!user) {
+      return res.status(404).json('Username or password is not correct.')
+    }
 
-    if (!validatePassword(password)) { return res.status(400).json('Invalid password.') }
+    const isPasswordCorrect = await user.comparePassword(
+      password,
+      user.password
+    )
 
-    if (!validateUsername(username)) { return res.status(400).json('Invalid username.') }
+    if (!isPasswordCorrect) {
+      return res.status(404).json('Username or password is not correct.')
+    }
 
-    const user = await User.findOne({ username })
-    if (!user) { return res.status(404).json('Username or password is not correct.') }
-
-    const isPasswordCorrect = await user.comparePassword(password, user.password)
-    if (!isPasswordCorrect) { return res.status(404).json('Username or password is not correct.') }
     const token = jwt.sign({ id: user._id }, JWT_KEY, {
       expiresIn: '14d'
     })
@@ -35,6 +42,7 @@ export const signIn = async (req, res) => {
       .status(200)
       .json('Logged in.')
   } catch (error) {
-    return res.status(500).json(error.message)
+    console.error(error)
+    return res.status(500).json('Internal server error.')
   }
 }

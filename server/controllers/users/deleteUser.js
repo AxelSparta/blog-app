@@ -1,11 +1,26 @@
 import { deleteImage } from '../../libs/cloudinary.js'
-import Post from '../../models/Post.js'
+import { deletePostsByUserId } from '../../models/post.model.js'
 
 export const deleteUser = async (req, res) => {
+  const user = req.user
+  const password = req.body.password
+
+  if (!password) {
+    return res.status(400).json('Password is required to delete user.')
+  }
+  const isPasswordCorrect = await user.comparePassword(
+    password,
+    req.user.password
+  )
+  if (!isPasswordCorrect) {
+    return res.status(401).json('Unauthorized incorrect password.')
+  }
+
   try {
-    const user = req.user
-    await Post.deleteMany({ userId: user.id })
-    if (user.avatar && user.avatar.public_id) { await deleteImage(user.avatar.public_id) }
+    await deletePostsByUserId(user._id)
+    if (user.avatar && user.avatar.public_id) {
+      await deleteImage(user.avatar.public_id)
+    }
     await user.delete()
 
     // clear cookie
