@@ -26,6 +26,16 @@ export const getUserByEmail = async email => {
   }
 }
 
+export const getUserById = async id => {
+  try {
+    const user = await User.findById(id)
+    return user
+  } catch (error) {
+    console.error(error)
+    throw new Error('Error fetching user by ID')
+  }
+}
+
 export const createUser = async ({ username, email, password }) => {
   try {
     const user = new User({

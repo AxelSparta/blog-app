@@ -1,27 +1,48 @@
-export const titleValidation = title => {
-  if (title.length > 3 && title.length < 200) {
-    return { error: false }
-  }
-  return { error: true, message: 'Title must be between 3 and 200 characters.' }
-}
-export const contentValidation = content => {
-  if (content.length > 20 && content.length < 3000) {
-    return { error: false }
-  }
-  return { error: true, message: 'Content must be between 20 and 3000 characters.' }
-}
+import { z } from 'zod'
+
+const categorySchema = z.enum([
+  'technology',
+  'art',
+  'science',
+  'cinema',
+  'design',
+  'food'
+])
+
+const postSchema = z.object({
+  title: z.string().min(3).max(200),
+  content: z.string().min(20).max(3000),
+  category: categorySchema
+})
 
 export const categoryValidation = category => {
-  const categoriesAllowed = [
-    'technology',
-    'art',
-    'science',
-    'cinema',
-    'design',
-    'food'
-  ]
-  if (!categoriesAllowed.includes(category)) {
+  const result = categorySchema.safeParse(category)
+  if (!result.success) {
     return { error: true, message: 'Invalid category.' }
   }
   return { error: false }
+}
+
+export const postValidation = postData => {
+  const result = postSchema.safeParse(postData)
+  if (!result.success) {
+    return {
+      error: true,
+      message: z.flattenError(result.error).fieldErrors
+    }
+  }
+  return { error: false, data: result.data }
+}
+
+export const partialPostSchema = postSchema.partial()
+
+export const partialPostValidation = postData => {
+  const result = partialPostSchema.safeParse(postData)
+  if (!result.success) {
+    return {
+      error: true,
+      message: z.flattenError(result.error).fieldErrors
+    }
+  }
+  return { error: false, data: result.data }
 }

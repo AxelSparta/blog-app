@@ -3,6 +3,7 @@ export const dashboard = async (req, res) => {
     const { _id, username, email, avatar } = req.user
     return res.json({ _id, username, email, avatar })
   } catch (error) {
-    return res.status(500).json({ error: error.message })
+    console.error(error)
+    return res.status(500).json('Server internal error.')
   }
 }

@@ -1,43 +1,29 @@
 import fs from 'fs-extra'
 import { uploadImage } from '../../libs/cloudinary.js'
-import Post from '../../schemas/Post.js'
+import { createNewPost } from '../../models/post.model.js'
 import { imageValidation } from '../../validations/image.validation.js'
-import {
-  categoryValidation,
-  contentValidation,
-  titleValidation
-} from '../../validations/post.validation.js'
+import { postValidation } from '../../validations/post.validation.js'
 
 export const createPost = async (req, res) => {
-  try {
-    const user = req.user
-    const { title, content, category } = req.body
-    // VALIDATIONS
-    if (!title || !content || !category) {
-      return res.status(400).json('Some data is missing.')
+  const user = req.user
+  const postValidationResult = postValidation(req.body)
+
+  if (postValidationResult.error) {
+    return res.status(400).json(postValidationResult.message)
+  }
+
+  const { title, content, category } = postValidationResult.data
+
+  let image = null
+
+  if (req.files?.image) {
+    // img validation
+    const imgValidationResult = imageValidation(req.files.image, 2)
+    if (imgValidationResult.error) {
+      return res.status(400).json(imgValidationResult.message)
     }
 
-    const titleResultValidation = titleValidation(title)
-    if (titleResultValidation.error) {
-      return res.status(400).json(titleResultValidation.message)
-    }
-    const contResultValidation = contentValidation(content)
-    if (contResultValidation.error) {
-      return res.status(400).json(contResultValidation.message)
-    }
-
-    const catResultValidation = categoryValidation(category)
-    if (catResultValidation.error) {
-      return res.status(400).json(catResultValidation.message)
-    }
-
-    let image
-    if (req.files && req.files.image) {
-      // img validation
-      const imgValidationResult = imageValidation(req.files.image, 2)
-      if (imgValidationResult.error) {
-        return res.status(400).json(imgValidationResult.message)
-      }
+    try {
       // subiendo imagen
       const result = await uploadImage(req.files.image.tempFilePath)
       // eliminando temp file
@@ -46,16 +32,24 @@ export const createPost = async (req, res) => {
         url: result.secure_url,
         public_id: result.public_id
       }
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json('Error uploading image.')
     }
-    await Post.create({
+  }
+
+  try {
+    await createNewPost({
       title,
       content,
       image,
       category,
       userId: user.id
     })
+
     return res.status(201).json('Post created.')
   } catch (error) {
-    return res.status(500).json({ error: error.message })
+    console.error(error)
+    return res.status(500).json('Something went wrong.')
   }
 }

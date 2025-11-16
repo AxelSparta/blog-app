@@ -12,8 +12,8 @@ const router = Router()
 
 router.get('/', getPosts)
 router.get('/user/:id', getPosts)
-router.get('/cat', getPostsCat)
 router.get('/:id', getPost)
+router.get('/cat', getPostsCat)
 
 router.post('/', isAuth, createPost)
 router.put('/:id', isAuth, editPost)

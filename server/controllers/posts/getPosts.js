@@ -1,16 +1,12 @@
-import Post from '../../schemas/Post.js'
+import { getPosts as fetchPosts } from '../../models/post.model.js'
 
 export const getPosts = async (req, res) => {
   try {
     const { id } = req.params
-    let posts
-    if (id) {
-      posts = await Post.find({ userId: id })
-    } else {
-      posts = await Post.find()
-    }
+    const posts = await fetchPosts(id)
     return res.json(posts)
   } catch (error) {
-    return res.status(500).json({ error: error.message })
+    console.error(error)
+    return res.status(500).json('Something went wrong.')
   }
 }

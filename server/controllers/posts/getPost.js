@@ -8,6 +8,7 @@ export const getPost = async (req, res) => {
     }
     return res.json(post)
   } catch (error) {
-    return res.status(500).json({ error: error.message })
+    console.error(error)
+    return res.status(500).json('Something went wrong.')
   }
 }
