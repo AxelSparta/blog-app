@@ -30,6 +30,24 @@ const userSignInSchema = z.object({
   password: passwordSchema
 })
 
+const userPartialSchema = z.object({
+  username: usernameSchema.optional(),
+  email: z.email('Invalid email address.').optional(),
+  password: passwordSchema.optional(),
+  newPassword: passwordSchema.optional()
+})
+
+export const validateUserPartial = data => {
+  const result = userPartialSchema.safeParse(data)
+  if (!result.success) {
+    return {
+      success: false,
+      errors: z.flattenError(result.error).fieldErrors
+    }
+  }
+  return { success: true, data: result.data }
+}
+
 export const validateUserSignUp = data => {
   const result = userSignUpSchema.safeParse(data)
 

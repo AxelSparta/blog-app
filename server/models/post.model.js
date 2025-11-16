@@ -1,3 +1,4 @@
+import { deleteImage } from '../libs/cloudinary.js'
 import Post from '../schemas/Post.js'
 
 export const getPosts = async id => {
@@ -46,4 +47,14 @@ export const updatePostById = async (id, updatedData) => {
 
 export const deletePostById = async id => {
   await Post.findByIdAndDelete(id)
+}
+
+export const deletePostsByUserId = async userId => {
+  const posts = await getPosts(userId)
+  posts.forEach(async post => {
+    if (post.image && post.image.public_id) {
+      await deleteImage(post.image.public_id)
+    }
+  })
+  await Post.deleteMany({ userId })
 }

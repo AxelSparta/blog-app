@@ -37,6 +37,6 @@ app.use(cookieParser())
 // routes
 app.use('/api/auth', authRouter)
 app.use('/api/posts', postsRouter)
-app.use('/api/users', userRouter)
+app.use('/api/user', userRouter)
 
 export default app

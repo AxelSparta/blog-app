@@ -53,3 +53,25 @@ export const createUser = async ({ username, email, password }) => {
     throw new Error('Error creating new user')
   }
 }
+
+export const updateUser = async (user, data) => {
+  const { newPassword, ...newData } = data
+
+  if (newPassword) {
+    user.password = await user.encryptPassword(newPassword)
+  }
+  try {
+    const result = await User.findByIdAndUpdate(
+      user._id,
+      {
+        ...newData,
+        password: user.password
+      },
+      { new: true }
+    )
+    return result._doc
+  } catch (error) {
+    console.error(error)
+    throw new Error('Error changing password')
+  }
+}

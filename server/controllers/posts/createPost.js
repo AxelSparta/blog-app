@@ -1,4 +1,3 @@
-import fs from 'fs-extra'
 import { uploadImage } from '../../libs/cloudinary.js'
 import { createNewPost } from '../../models/post.model.js'
 import { imageValidation } from '../../validations/image.validation.js'
@@ -26,8 +25,6 @@ export const createPost = async (req, res) => {
     try {
       // subiendo imagen
       const result = await uploadImage(req.files.image.tempFilePath)
-      // eliminando temp file
-      await fs.remove(req.files.image.tempFilePath)
       image = {
         url: result.secure_url,
         public_id: result.public_id

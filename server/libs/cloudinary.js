@@ -1,4 +1,5 @@
 import cloudinary, { v2 } from 'cloudinary'
+import fs from 'fs-extra'
 import { API_KEY, API_SECRET, CLOUD_NAME } from '../envConfig.js'
 
 cloudinary.config({
@@ -8,9 +9,11 @@ cloudinary.config({
 })
 
 export const uploadImage = async filePath => {
-  return await v2.uploader.upload(filePath, {
+  const result = await v2.uploader.upload(filePath, {
     folder: 'posts'
   })
+  await fs.remove(filePath)
+  return result
 }
 
 export const deleteImage = async publicId => {
