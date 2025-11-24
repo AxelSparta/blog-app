@@ -1,18 +1,28 @@
 import { deleteImage } from '../libs/cloudinary.js'
 import Post from '../schemas/Post.js'
 
-export const getPosts = async id => {
-  let posts
-  if (id) {
-    posts = await Post.find({ userId: id })
-  } else {
-    posts = await Post.find()
-  }
+export const getPosts = async () => {
+  const posts = await Post.find()
   return posts
 }
 
-export const getPostByCategory = async category => {
+export const getPostById = async id => {
+  const post = await Post.findById(id)
+  return post
+}
+
+export const getPostsByCategory = async category => {
   const posts = await Post.find({ category })
+  return posts
+}
+
+export const getPostsByUserId = async userId => {
+  const posts = await Post.find({ userId })
+  return posts
+}
+
+export const getPostsByUserAndCategory = async (userId, category) => {
+  const posts = await Post.find({ userId, category })
   return posts
 }
 
@@ -31,11 +41,6 @@ export const createNewPost = async ({
     userId
   })
   await newPost.save()
-}
-
-export const getPostById = async id => {
-  const post = await Post.findById(id)
-  return post
 }
 
 export const updatePostById = async (id, updatedData) => {
