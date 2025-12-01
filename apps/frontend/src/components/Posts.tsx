@@ -1,5 +1,7 @@
 'use client'
 
+import { config } from '@/lib/config'
+
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { type Post } from "../types/Post"
@@ -12,7 +14,8 @@ export function Posts() {
 	useEffect(() => {
 		const category = searchParams.get('cat')
 		const fetchPosts = async () => {
-			const response = await fetch(`http://localhost:4000/api/posts?category=${category}`)
+			const fetchUrl = category ? `${config.apiUrl}/api/posts?cat=${category}` : `${config.apiUrl}/api/posts`
+			const response = await fetch(fetchUrl)
 			const data = await response.json()
 			setPosts(data)
 		}
