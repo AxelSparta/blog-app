@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import logo from "@/../public/logo-blog.png"
-import ThemeSwitch from "@/components/ThemeSwitch"
-import Image from "next/image"
-import Link from "next/link"
-import { useState } from "react"
+import logo from "@/../public/logo-blog.png";
+import ThemeSwitch from "@/components/ThemeSwitch";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import {
   FaBars,
   FaPen,
   FaSignInAlt,
   FaSignOutAlt,
   FaTimes,
-} from "react-icons/fa"
+  FaUserPlus
+} from "react-icons/fa";
 
 const CATEGORIES = [
   { name: "Food", href: "/?cat=food" },
@@ -20,41 +21,41 @@ const CATEGORIES = [
   { name: "Science", href: "/?cat=science" },
   { name: "Art", href: "/?cat=art" },
   { name: "Tech", href: "/?cat=technology" },
-]
+];
 
 const navLinkClasses =
-  "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+  "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors";
 const mobileNavLinkClasses =
-  "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-200 dark:hover:text-white dark:hover:bg-gray-800"
+  "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-200 dark:hover:text-white dark:hover:bg-gray-800";
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const closeMenu = () => {
-    setIsMenuOpen(false)
-  }
+    setIsMenuOpen(false);
+  };
 
   // TODO: Implement actual logout logic
   const handleLogout = async () => {
     try {
       // Add logout logic here
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto lg:px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link
             href="/"
-            className="shrink-0 flex items-center"
+            className="flex items-center"
             onClick={closeMenu}
           >
             <Image
@@ -68,7 +69,7 @@ export function Navbar() {
 
           <div className="flex justify-between items-center">
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4 mr-4">
+            <div className="hidden md:flex items-center space-x-2 mr-4">
               {CATEGORIES.map((category) => (
                 <Link
                   key={category.href}
@@ -81,16 +82,28 @@ export function Navbar() {
             </div>
 
             {/* Desktop Right Section */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link href="/write" className={`flex items-center ${navLinkClasses}`}>
+            <div className="hidden md:flex items-center space-x-3 border-l border-gray-200 dark:border-gray-700 pl-4">
+              <Link
+                href="/write"
+                className={`flex items-center ${navLinkClasses}`}
+              >
                 <FaPen className="mr-1" /> Write
               </Link>
-              <Link href="/login" className={`flex items-center ${navLinkClasses}`}>
+              <Link
+                href="/login"
+                className={`flex items-center ${navLinkClasses}`}
+              >
                 <FaSignInAlt className="mr-1" /> Login
+              </Link>
+              <Link
+                href="/register"
+                className={`flex items-center ${navLinkClasses}`}
+              >
+                <FaUserPlus className="mr-1" /> Register
               </Link>
               <button
                 onClick={handleLogout}
-                className={`flex items-center ${navLinkClasses}`}
+                className={`flex items-center ${navLinkClasses} cursor-pointer`}
               >
                 <FaSignOutAlt className="mr-1" /> Logout
               </button>
@@ -152,8 +165,8 @@ export function Navbar() {
               </Link>
               <button
                 onClick={() => {
-                  handleLogout()
-                  closeMenu()
+                  handleLogout();
+                  closeMenu();
                 }}
                 className={`w-full flex items-center ${mobileNavLinkClasses}`}
               >
@@ -164,5 +177,5 @@ export function Navbar() {
         </div>
       )}
     </nav>
-  )
+  );
 }
