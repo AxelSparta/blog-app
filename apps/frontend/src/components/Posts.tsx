@@ -4,16 +4,15 @@ import { type Post } from "../types/Post";
 import { PostCard } from "./PostCard";
 
 export async function Posts({
-  searchParams,
+  category
 }: {
-  searchParams?: { cat?: string };
+  category?: string;
 }) {
-  const category = await searchParams?.cat;
   const fetchUrl = category
     ? `${config.apiUrl}/api/posts?cat=${category}`
     : `${config.apiUrl}/api/posts`;
 
-  const response = await fetch(fetchUrl, { next: { revalidate: 0 } });
+  const response = await fetch(fetchUrl, { cache: "no-store" });
   if (!response.ok) {
     return (
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
