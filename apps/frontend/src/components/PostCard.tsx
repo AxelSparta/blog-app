@@ -26,7 +26,7 @@ const categoryBadgeColors = {
 
 export function PostCard({ post }: { post: Post }) {
   // Format date
-  const formattedDate = new Date(post.createdAt).toLocaleDateString("es-ES", {
+  const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -38,7 +38,7 @@ export function PostCard({ post }: { post: Post }) {
       ? post.content.substring(0, 120) + "..."
       : post.content;
 
-	const postLink = `/post/${post._id}`;
+  const postLink = `/post/${post._id}`;
 
   // Get category gradient
   const categoryGradient =
