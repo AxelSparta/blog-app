@@ -1,4 +1,4 @@
-import { getPostById } from "@/utils/posts";
+import { getPostById } from "@/lib/services/posts";
 import Image from "next/image";
 import { Post as PostType } from "@/types/Post";
 
