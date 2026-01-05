@@ -17,6 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { registerUser } from "@/lib/services/users";
+import { useAuthStore } from "@/store/auth.store";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   username: z.string()
@@ -43,12 +46,14 @@ const formSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
       "Password must contain at least one number, one uppercase letter, and one lowercase letter."
     ),
-  email: z.string().email(),
+  email: z.email(),
 });
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ message: "" });
+
+  const login = useAuthStore((state) => state.login);
 
 
   // 1. Define your form.
@@ -73,11 +78,14 @@ export default function RegisterPage() {
     setLoading(true);
     
     try {
-      await registerUser(username, email, password)
-      console.log('todo ok')
-    } catch (err: Error | any) {
+      const loginRes = await registerUser(username, email, password)
+      const { id, message } = loginRes
+      login({ id, username, email })
+      toast.success(message);
+      redirect('/')
+    } catch (err: unknown) {
       console.error(err)
-      setError({ message: err.message || "An unexpected error occurred." });
+      setError({ message: err instanceof Error ? err.message : "An unexpected error occurred." });
     } finally {
       setLoading(false);
     }

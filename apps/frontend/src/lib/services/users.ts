@@ -9,6 +9,7 @@ export async function registerUser(
 ) {
   const response = await fetch(`${API_URL}/api/auth/signup`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
