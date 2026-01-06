@@ -40,7 +40,11 @@ export const signIn = async (req, res) => {
         secure: true
       })
       .status(200)
-      .json('Logged in.')
+      .json({ message: 'Sign in successful.', user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      } })
   } catch (error) {
     console.error(error)
     return res.status(500).json('Internal server error.')

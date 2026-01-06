@@ -16,20 +16,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { registerUser } from "@/lib/services/users";
+import { registerUser } from "@/lib/services/auth";
 import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const formSchema = z.object({
-  username: z.string()
-  .trim()
-  .min(3, 'Username must be at least 3 characters long.')
-  .max(30, 'Username must be at most 30 characters long.')
-  .regex(
-    /^(?!.*__)(?!.*\.\.)(?!.*\.$)(?!^\.)[A-Za-z][A-Za-z0-9._]{2,29}$/,
-    'Username must start with a letter and can only contain letters, numbers, underscores, and dots. No consecutive underscores or dots allowed.'
-  ),
+  username: z
+    .string()
+    .trim()
+    .min(3, "Username must be at least 3 characters long.")
+    .max(30, "Username must be at most 30 characters long.")
+    .regex(
+      /^(?!.*__)(?!.*\.\.)(?!.*\.$)(?!^\.)[A-Za-z][A-Za-z0-9._]{2,29}$/,
+      "Username must start with a letter and can only contain letters, numbers, underscores, and dots. No consecutive underscores or dots allowed."
+    ),
   password: z
     .string()
     .min(8)
@@ -52,9 +54,9 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ message: "" });
+  const router = useRouter();
 
   const login = useAuthStore((state) => state.login);
-
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,22 +72,24 @@ export default function RegisterPage() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setError({ message: "" });
-    const { username, email, password, confirmPassword  } = values;
+    const { username, email, password, confirmPassword } = values;
     if (password !== confirmPassword) {
       setError({ message: "Passwords do not match." });
       return;
     }
     setLoading(true);
-    
+
     try {
-      const loginRes = await registerUser(username, email, password)
-      const { id, message } = loginRes
-      login({ id, username, email })
+      const loginRes = await registerUser(username, email, password);
+      const { id, message } = loginRes;
+      login({ id, username, email });
       toast.success(message);
-      redirect('/')
+      router.push("/");
     } catch (err: unknown) {
-      console.error(err)
-      setError({ message: err instanceof Error ? err.message : "An unexpected error occurred." });
+      setError({
+        message:
+          err instanceof Error ? err.message : "An unexpected error occurred.",
+      });
     } finally {
       setLoading(false);
     }
@@ -158,6 +162,15 @@ export default function RegisterPage() {
       {error.message && (
         <p className="mt-4 text-red-600 text-center">{error.message}</p>
       )}
+      <span className="block text-sm mt-4">
+        Already have an account? Go to{" "}
+        <Link
+          className="underline text-blue-400 hover:text-blue-600 font-bold"
+          href="/login"
+        >
+          Login
+        </Link>
+      </span>
     </main>
   );
 }

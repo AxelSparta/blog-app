@@ -24,6 +24,20 @@ export async function registerUser(
   return await response.json();
 }
 
+export async function loginUser(username: string, password: string) {
+  const response = await fetch(`${API_URL}/api/auth/signin`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData);
+  }
+  return await response.json();
+}
+
 export async function logoutUser() {
   const response = await fetch(`${API_URL}/api/auth/logout`, {
     method: "POST",

@@ -20,8 +20,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { logoutUser } from "@/lib/services/users";
+import { logoutUser } from "@/lib/services/auth";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
   { name: "Food", href: "/?cat=food" },
@@ -38,6 +39,7 @@ const navLinkClasses =
 export function Navbar() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
 
   // TODO: Implement actual logout logic
   const handleLogout = async () => {
@@ -46,8 +48,10 @@ export function Navbar() {
       await logoutUser();
       logout();
       toast.success("Logged out successfully");
+      router.push("/");
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Failed to logout";
+      const message =
+        error instanceof Error ? error.message : "Failed to logout";
       toast.error(message);
     }
   };
