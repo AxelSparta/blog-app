@@ -23,3 +23,17 @@ export async function registerUser(
 
   return await response.json();
 }
+
+export async function logoutUser() {
+  const response = await fetch(`${API_URL}/api/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData);
+  }
+
+  return await response.json();
+}
