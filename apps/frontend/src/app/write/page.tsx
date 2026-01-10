@@ -20,7 +20,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Save, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import Image from "next/image";
 
 const DRAFT_STORAGE_KEY = "blog-post-draft";
@@ -73,6 +73,7 @@ export default function WritePage() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Save draft to localStorage on change
@@ -83,13 +84,12 @@ export default function WritePage() {
           title: value.title || "",
           content: value.content || "",
           category: value.category || "technology",
-          imagePreview: imagePreview || null,
         };
         localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, imagePreview]);
+  }, [form]);
 
   // Handle image preview
   useEffect(() => {
@@ -148,20 +148,6 @@ export default function WritePage() {
     }
   };
 
-  const handleSaveDraft = () => {
-    const currentValues = form.getValues();
-    const draft = {
-      title: currentValues.title || "",
-      content: currentValues.content || "",
-      category: currentValues.category || "technology",
-      imagePreview: imagePreview || null,
-    };
-    if (typeof window !== "undefined") {
-      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
-      toast.success("Draft saved!");
-    }
-  };
-
   if (!isAuthenticated) {
     return null;
   }
@@ -184,7 +170,11 @@ export default function WritePage() {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your post title..." {...field} />
+                  <Input
+                    className="text-base dark:text-white dark:bg-slate-900"
+                    placeholder="Enter your post title..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -198,7 +188,10 @@ export default function WritePage() {
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <Select {...field}>
+                  <Select
+                    className="text-base dark:text-white dark:bg-slate-900"
+                    {...field}
+                  >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {cat.label}
@@ -220,6 +213,7 @@ export default function WritePage() {
                 <FormControl>
                   <div className="space-y-4">
                     <Input
+                      className="text-base dark:text-white dark:bg-slate-900 cursor-pointer"
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
@@ -267,6 +261,7 @@ export default function WritePage() {
                 <FormLabel>Content</FormLabel>
                 <FormControl>
                   <RichTextEditor
+                    className="dark:text-white dark:bg-slate-900"
                     content={field.value}
                     onChange={field.onChange}
                     placeholder="Start writing your post content..."
@@ -279,16 +274,7 @@ export default function WritePage() {
           />
 
           <div className="flex gap-4 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleSaveDraft}
-              disabled={isSubmitting}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save Draft
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button variant="outline" type="submit" disabled={isSubmitting}>
               <Send className="mr-2 h-4 w-4" />
               {isSubmitting ? "Publishing..." : "Publish Post"}
             </Button>
