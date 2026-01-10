@@ -24,3 +24,18 @@ export async function getAllPosts({ category }: { category?: string } = {}) {
   const postsData = await response.json()
   return postsData
 }
+
+export async function createPost(formData: FormData) {
+  const response = await fetch(`${API_URL}/api/posts`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to create post");
+  }
+
+  return await response.json();
+}
