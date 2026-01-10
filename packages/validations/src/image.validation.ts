@@ -18,7 +18,7 @@ export const imageValidation = (image: any, maxSizeInMb: number) => {
   if (!parseResult.success) {
     return {
       error: true,
-      message: z.flattenError(parseResult.error).fieldErrors
+      message: parseResult.error.flatten().fieldErrors
     }
   }
   return { error: false }

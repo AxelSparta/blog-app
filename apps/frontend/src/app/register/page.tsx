@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -21,35 +20,8 @@ import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const formSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(3, "Username must be at least 3 characters long.")
-    .max(30, "Username must be at most 30 characters long.")
-    .regex(
-      /^(?!.*__)(?!.*\.\.)(?!.*\.$)(?!^\.)[A-Za-z][A-Za-z0-9._]{2,29}$/,
-      "Username must start with a letter and can only contain letters, numbers, underscores, and dots. No consecutive underscores or dots allowed."
-    ),
-  password: z
-    .string()
-    .min(8)
-    .max(30)
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-      "Password must contain at least one number, one uppercase letter, and one lowercase letter."
-    ),
-  confirmPassword: z
-    .string()
-    .min(8)
-    .max(30)
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-      "Password must contain at least one number, one uppercase letter, and one lowercase letter."
-    ),
-  email: z.email(),
-});
+import { signUpFormSchema } from "@repo/validations";
+import type { z } from "zod";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -59,8 +31,8 @@ export default function RegisterPage() {
   const login = useAuthStore((state) => state.login);
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       username: "",
       password: "",
@@ -70,7 +42,7 @@ export default function RegisterPage() {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
     setError({ message: "" });
     const { username, email, password, confirmPassword } = values;
     if (password !== confirmPassword) {

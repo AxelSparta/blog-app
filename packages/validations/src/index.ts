@@ -1,4 +1,4 @@
-export * from './image.validation'
-export * from './post.validation'
-export * from './user.validations'
+export * from './image.validation.ts'
+export * from './post.validation.ts'
+export * from './user.validations.ts'
 

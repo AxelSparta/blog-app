@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@repo/validations": ["../../packages/validations/src/index.ts"]
     }
   },
   "include": [

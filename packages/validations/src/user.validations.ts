@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const usernameSchema = z
+export const usernameSchema = z
   .string()
   .trim()
   .min(3, 'Username must be at least 3 characters long.')
@@ -14,7 +14,7 @@ export const validateUsername = (username: string) => {
   return usernameSchema.safeParse(username).success
 }
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters long.')
   .max(30, 'Password must be at most 30 characters long.')
@@ -36,6 +36,19 @@ const userSignUpSchema = z.object({
 const userSignInSchema = z.object({
   username: usernameSchema,
   password: passwordSchema
+})
+
+// Frontend form schemas
+export const signInFormSchema = z.object({
+  username: usernameSchema,
+  password: passwordSchema
+})
+
+export const signUpFormSchema = z.object({
+  username: usernameSchema,
+  email: z.string().email('Invalid email address.'),
+  password: passwordSchema,
+  confirmPassword: passwordSchema,
 })
 
 const userPartialSchema = z.object({

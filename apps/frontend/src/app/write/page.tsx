@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { postFormSchema, type PostFormData } from "@/lib/validations/post";
+import { postFormSchema, type PostFormData } from "@repo/validations";
 import {
   Form,
   FormControl,
@@ -78,7 +78,7 @@ export default function WritePage() {
 
   // Save draft to localStorage on change
   useEffect(() => {
-    const subscription = form.watch((value) => {
+    const subscription = form.watch((value: Partial<PostFormData>) => {
       if (typeof window !== "undefined") {
         const draft = {
           title: value.title || "",
@@ -88,7 +88,11 @@ export default function WritePage() {
         localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription && 'unsubscribe' in subscription) {
+        (subscription as { unsubscribe: () => void }).unsubscribe();
+      }
+    };
   }, [form]);
 
   // Handle image preview
