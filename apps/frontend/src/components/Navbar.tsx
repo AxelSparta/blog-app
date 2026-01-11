@@ -112,7 +112,8 @@ export function Navbar() {
                   title="Write a post"
                 >
                   <FaPen className="mr-1" />
-                  Write
+                  <span className="hidden sm:inline">Write</span>
+
                 </Link>
                 <Link
                   href="/dashboard"
@@ -120,7 +121,8 @@ export function Navbar() {
                   title="Go to dashboard"
                 >
                   <FaUserCircle className="mr-1" />
-                  Dashboard
+                  <span className="hidden sm:inline">Dashboard</span>
+
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -128,7 +130,8 @@ export function Navbar() {
                   title="Logout"
                 >
                   <FaSignOutAlt className="mr-1" />
-                  Logout
+                  <span className="hidden sm:inline">Logout</span>
+
                 </button>
               </>
             ) : (
@@ -139,7 +142,7 @@ export function Navbar() {
                   title="Login"
                 >
                   <FaSignInAlt className="mr-1" />
-                  Login
+                  <span className="hidden sm:inline">Login</span>
                 </Link>
                 <Link
                   href="/register"
@@ -147,7 +150,8 @@ export function Navbar() {
                   title="Register"
                 >
                   <FaUserPlus className="mr-1" />
-                  Register
+                  <span className="hidden sm:inline">Register</span>
+
                 </Link>
               </>
             )}

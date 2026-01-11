@@ -92,7 +92,7 @@ export default function RegisterPage() {
             )}
           />
           <Button disabled={loading} type="submit">
-            {loading ? "Registering..." : "Register user"}
+            {loading ? "Registering..." : "Login"}
           </Button>
         </form>
       </Form>

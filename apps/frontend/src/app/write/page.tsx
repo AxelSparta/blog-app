@@ -81,12 +81,18 @@ export default function WritePage() {
   useEffect(() => {
     const subscription = form.watch((value: Partial<Omit<PostFormData, 'image'>>) => {
       if (typeof window !== "undefined") {
-        const draft = {
-          title: value.title || "",
-          content: value.content || "",
-          category: value.category || "technology",
-        };
-        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+        // Only save if there's actual content (title or content)
+        if (value.title?.trim() || value.content?.trim()) {
+          const draft = {
+            title: value.title || "",
+            content: value.content || "",
+            category: value.category || "technology",
+          };
+          localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+        } else {
+          // Remove draft if form is empty
+          localStorage.removeItem(DRAFT_STORAGE_KEY);
+        }
       }
     });
     return () => {
@@ -168,14 +174,19 @@ export default function WritePage() {
 
       await createPost(formData);
 
-      // Clear draft after successful submission
+      // Clear draft and reset form only after successful submission
       if (typeof window !== "undefined") {
         localStorage.removeItem(DRAFT_STORAGE_KEY);
       }
-
-      toast.success("Post created successfully!");
-      form.reset();
+      form.reset({
+        title: "",
+        content: "",
+        category: "technology",
+        image: null,
+      });
       setImagePreview(null);
+      
+      toast.success("Post created successfully!");
       router.push("/");
     } catch (error) {
       toast.error(
