@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { imageFileSchema } from './image.validation.ts'
 
 export const categorySchema = z.enum([
   'technology',
@@ -42,7 +43,7 @@ export const postFormSchema = z.object({
       'Content must be at most 3000 characters (excluding formatting)'
     ),
   category: categorySchema,
-  image: z.instanceof(File).optional().or(z.null()),
+  image: imageFileSchema(2).optional().or(z.null()),
 })
 
 export type PostFormData = z.infer<typeof postFormSchema>

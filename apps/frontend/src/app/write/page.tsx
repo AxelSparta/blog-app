@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postFormSchema, type PostFormData } from "@repo/validations";
+import { validateImageFile } from "@repo/validations";
 import {
   Form,
   FormControl,
@@ -78,7 +79,7 @@ export default function WritePage() {
 
   // Save draft to localStorage on change
   useEffect(() => {
-    const subscription = form.watch((value: Partial<PostFormData>) => {
+    const subscription = form.watch((value: Partial<Omit<PostFormData, 'image'>>) => {
       if (typeof window !== "undefined") {
         const draft = {
           title: value.title || "",
@@ -95,18 +96,38 @@ export default function WritePage() {
     };
   }, [form]);
 
-  // Handle image preview
+  // Handle image preview and validation
   useEffect(() => {
     if (watchedImage && watchedImage instanceof File) {
+      // Validate image file
+      const validationResult = validateImageFile(watchedImage, 2);
+      if (validationResult.error) {
+        toast.error(validationResult.message || "Invalid image file");
+        setImagePreview(null);
+        form.setValue("image", null);
+        // Clear the file input
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
+        return;
+      }
+      
+      // If validation passes, create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+      };
+      reader.onerror = () => {
+        toast.error("Error reading image file");
+        setImagePreview(null);
+        form.setValue("image", null);
       };
       reader.readAsDataURL(watchedImage);
     } else {
       setImagePreview(null);
     }
-  }, [watchedImage]);
+  }, [watchedImage, form]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -119,6 +140,19 @@ export default function WritePage() {
     if (!isAuthenticated) {
       toast.error("You must be logged in to create a post");
       return;
+    }
+
+    // Validate image if provided
+    if (data.image && data.image instanceof File) {
+      const imageValidation = validateImageFile(data.image, 2);
+      if (imageValidation.error) {
+        toast.error(imageValidation.message || "Invalid image file");
+        form.setError("image", {
+          type: "manual",
+          message: imageValidation.message || "Invalid image file"
+        });
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -211,6 +245,7 @@ export default function WritePage() {
           <FormField
             control={form.control}
             name="image"
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             render={({ field: { value, onChange, ...field } }) => (
               <FormItem>
                 <FormLabel>Featured Image (Optional)</FormLabel>
@@ -219,13 +254,32 @@ export default function WritePage() {
                     <Input
                       className="text-base dark:text-white dark:bg-slate-900 cursor-pointer"
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,image/jpg"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
+                        if (file) {
+                          // Validate immediately when file is selected
+                          const validation = validateImageFile(file, 2);
+                          if (validation.error) {
+                            toast.error(validation.message || "Invalid image file");
+                            form.setError("image", {
+                              type: "manual",
+                              message: validation.message || "Invalid image file"
+                            });
+                            e.target.value = ''; // Clear the input
+                            onChange(null);
+                            return;
+                          }
+                          // Clear any previous errors
+                          form.clearErrors("image");
+                        }
                         onChange(file || null);
                       }}
                       {...field}
                     />
+                    <p className="text-sm text-muted-foreground">
+                      Accepted formats: PNG, JPG, JPEG. Max size: 2MB
+                    </p>
                     {imagePreview && (
                       <div className="relative w-full h-64 rounded-md overflow-hidden border">
                         <Image
