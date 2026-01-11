@@ -51,3 +51,32 @@ export async function logoutUser() {
 
   return await response.json();
 }
+
+export async function getUserDashboard() {
+  const response = await fetch(`${API_URL}/api/user`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to fetch user data");
+  }
+
+  return await response.json();
+}
+
+export async function updateUser(formData: FormData) {
+  const response = await fetch(`${API_URL}/api/user`, {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to update user");
+  }
+
+  return await response.json();
+}

@@ -39,3 +39,46 @@ export async function createPost(formData: FormData) {
 
   return await response.json();
 }
+
+export async function getUserPosts(userId: string) {
+  const response = await fetch(`${API_URL}/api/posts?userId=${userId}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to fetch user posts");
+  }
+
+  return await response.json();
+}
+
+export async function updatePost(postId: string, formData: FormData) {
+  const response = await fetch(`${API_URL}/api/posts/${postId}`, {
+    method: "PUT",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to update post");
+  }
+
+  return await response.json();
+}
+
+export async function deletePost(postId: string) {
+  const response = await fetch(`${API_URL}/api/posts/${postId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(typeof errorData === "string" ? errorData : "Failed to delete post");
+  }
+
+  return await response.json();
+}

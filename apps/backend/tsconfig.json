@@ -4,9 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2022", "DOM"],
-    "allowImportingTsExtensions": true,
     "outDir": "./dist",
-    "rootDir": "./server",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -17,5 +15,5 @@
     "noEmit": false
   },
   "include": ["server/**/*"],
-  "exclude": ["node_modules", "dist", "upload"]
+  "exclude": ["node_modules", "dist", "upload", "../../packages"]
 }
