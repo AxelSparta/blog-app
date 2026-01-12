@@ -1,10 +1,12 @@
 import { getPostById } from "@/lib/services/posts";
 import Image from "next/image";
 import { Post as PostType } from "@/types/Post";
+import { sanitize } from "@repo/validations";
 
 export default async function Post({ params }: { params: { postId: string } }) {
   const { postId } = await params;
   const post: PostType | null = await getPostById(postId);
+  const sanitizedHtml = sanitize(post?.content!);
 
   if (!post) {
     return (
@@ -21,7 +23,7 @@ export default async function Post({ params }: { params: { postId: string } }) {
   });
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
+    <main className="w-full max-w-3xl mx-auto p-6">
       <header className="mb-6">
         <h1 className="text-3xl font-bold mb-2">{post.title}</h1>
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -53,8 +55,8 @@ export default async function Post({ params }: { params: { postId: string } }) {
         </div>
       </section>
 
-      <article className="prose prose-slate dark:prose-invert">
-        <p style={{ whiteSpace: "pre-line" }}>{post.content}</p>
+      <article className="prose prose-sm sm:prose-base dark:prose-invert">
+        <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }}></div>
       </article>
     </main>
   );

@@ -7,7 +7,6 @@ import { getUserDashboard, updateUser } from "@/lib/services/auth";
 import { getUserPosts, deletePost } from "@/lib/services/posts";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { validateUserPartial } from "@repo/validations";
 import { validateImageFile } from "@repo/validations";
 import {
   Card,
@@ -27,6 +26,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 import Link from "next/link";
 import { Post } from "@/types/Post";
@@ -94,19 +101,14 @@ export default function DashboardPage() {
 
         setUserData(dashboardData);
         setUserPosts(posts);
-        form.reset({
-          username: dashboardData.username,
-          email: dashboardData.email,
-          password: "",
-          newPassword: "",
-          avatar: null,
-        });
         if (dashboardData.avatar?.url) {
           setAvatarPreview(dashboardData.avatar.url);
         }
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to load dashboard data"
+          error instanceof Error
+            ? error.message
+            : "Failed to load dashboard data"
         );
       } finally {
         setIsLoading(false);
@@ -121,7 +123,14 @@ export default function DashboardPage() {
       const validation = validateImageFile(file, 2);
       if (validation.error) {
         toast.error(validation.message || "Invalid image file");
-        form.setValue("avatar", null);
+        form.resetField("avatar");
+        const fileInput = document.querySelector(
+          'input[type="file"]'
+        ) as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = "";
+        }
+        setAvatarPreview(null);
         return;
       }
       const reader = new FileReader();
@@ -131,6 +140,7 @@ export default function DashboardPage() {
       reader.readAsDataURL(file);
     } else {
       setAvatarPreview(null);
+      form.resetField("avatar");
     }
     form.setValue("avatar", file);
   };
@@ -144,23 +154,8 @@ export default function DashboardPage() {
     setIsUpdating(true);
 
     try {
-      // Validate the form data
-      const validation = validateUserPartial({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        newPassword: data.newPassword,
-      });
-
-      if (!validation.success) {
-        const errors = validation.errors || {};
-        const firstErrorKey = Object.keys(errors)[0] as keyof typeof errors;
-        const firstError = firstErrorKey ? errors[firstErrorKey]?.[0] : undefined;
-        toast.error(firstError || "Validation failed");
-        return;
-      }
-
       const formData = new FormData();
+
       if (data.username) formData.append("username", data.username);
       if (data.email) formData.append("email", data.email);
       if (data.password) formData.append("password", data.password);
@@ -190,8 +185,8 @@ export default function DashboardPage() {
 
       toast.success("Profile updated successfully!");
       form.reset({
-        username: dashboardData.username,
-        email: dashboardData.email,
+        username: "",
+        email: "",
         password: "",
         newPassword: "",
         avatar: null,
@@ -206,9 +201,6 @@ export default function DashboardPage() {
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) {
-      return;
-    }
 
     try {
       await deletePost(postId);
@@ -236,10 +228,10 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage your profile and posts
-        </p>
+        <h1 className="text-3xl font-bold mb-2">
+          Hello {user?.username ?? "loading..."}!
+        </h1>
+        <p className="text-muted-foreground">Manage your profile and posts</p>
       </div>
 
       {/* Tabs */}
@@ -270,7 +262,7 @@ export default function DashboardPage() {
 
       {/* Profile Tab */}
       {activeTab === "profile" && (
-        <Card>
+        <Card className="dark:bg-slate-900">
           <CardHeader>
             <CardTitle>Profile Settings</CardTitle>
             <CardDescription>
@@ -325,10 +317,7 @@ export default function DashboardPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder={userData?.username || ""}
-                          {...field}
-                        />
+                        <Input placeholder="Enter new username" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -345,7 +334,7 @@ export default function DashboardPage() {
                       <FormControl>
                         <Input
                           type="email"
-                          placeholder={userData?.email || ""}
+                          placeholder="Enter new email"
                           {...field}
                         />
                       </FormControl>
@@ -408,7 +397,7 @@ export default function DashboardPage() {
       {activeTab === "posts" && (
         <div className="space-y-4">
           {userPosts.length === 0 ? (
-            <Card>
+            <Card className="dark:bg-slate-900">
               <CardContent className="py-12 text-center text-muted-foreground">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>You haven&apos;t created any posts yet.</p>
@@ -422,7 +411,7 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {userPosts.map((post) => (
-                <Card key={post._id} className="relative">
+                <Card key={post._id} className="relative dark:bg-slate-900">
                   <CardHeader>
                     <CardTitle className="line-clamp-2">{post.title}</CardTitle>
                     <CardDescription>
@@ -441,10 +430,6 @@ export default function DashboardPage() {
                           />
                         </div>
                       )}
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {post.content.replace(/<[^>]*>/g, "").substring(0, 100)}
-                        ...
-                      </p>
                       <div className="flex gap-2">
                         <Link href={`/post/${post._id}`} className="flex-1">
                           <Button variant="outline" className="w-full">
@@ -456,13 +441,29 @@ export default function DashboardPage() {
                             <Edit2 className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => handleDeletePost(post._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>
+                                Are you absolutely sure?
+                              </DialogTitle>
+                              <Button
+                              className="max-w-14 mx-auto mt-5"
+                                variant="destructive"
+                                onClick={() =>
+                                  handleDeletePost(post._id)
+                                }
+                              >
+                                Yes
+                              </Button>
+                            </DialogHeader>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                   </CardContent>

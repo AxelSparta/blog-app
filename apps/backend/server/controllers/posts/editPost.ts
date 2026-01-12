@@ -2,7 +2,7 @@ import { type Response } from 'express'
 import fs from 'fs-extra'
 import { deleteImage, uploadImage } from '../../libs/cloudinary.js'
 import { getPostById, updatePostById } from '../../models/post.model.js'
-import { imageValidation, partialPostValidation } from '@repo/validations'
+import { imageValidation, partialPostValidation, sanitize } from '@repo/validations'
 import type { AuthRequest } from '../../middlewares/isAuth.js'
 import type { UploadedFile } from 'express-fileupload'
 
@@ -11,10 +11,12 @@ export const editPost = async (
   res: Response
 ): Promise<Response | void> => {
   const resultPostValidation = partialPostValidation(req.body)
-
   if (resultPostValidation.error) {
     return res.status(400).json(resultPostValidation.message)
   }
+
+  const data = resultPostValidation.data!
+  const sanitizedContent = data.content ? sanitize(data.content) : undefined
 
   const user = req.user
   const { id: blogId } = req.params
@@ -52,7 +54,8 @@ export const editPost = async (
     }
 
     const updatedData = {
-      ...resultPostValidation.data,
+      ...data,
+      ...(sanitizedContent ? { content: sanitizedContent } : {}),
       image: image || postToEdit.image
     }
 

@@ -1,7 +1,7 @@
 import { type Response } from 'express'
 import { uploadImage } from '../../libs/cloudinary.js'
 import { createNewPost } from '../../models/post.model.js'
-import { imageValidation, postValidation } from '@repo/validations'
+import { imageValidation, postValidation, sanitize } from '@repo/validations'
 import type { AuthRequest } from '../../middlewares/isAuth.js'
 import type { UploadedFile } from 'express-fileupload'
 
@@ -14,6 +14,7 @@ export const createPost = async (req: AuthRequest, res: Response): Promise<Respo
   }
 
   const { title, content, category } = postValidationResult.data!
+  const sanitizedContent = sanitize(content)
 
   let image: { url: string; public_id: string } | null = null
 
@@ -41,7 +42,7 @@ export const createPost = async (req: AuthRequest, res: Response): Promise<Respo
   try {
     await createNewPost({
       title,
-      content,
+      content: sanitizedContent,
       image,
       category,
       userId: user._id.toString()

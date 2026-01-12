@@ -32,12 +32,6 @@ export function PostCard({ post }: { post: Post }) {
     day: "numeric",
   });
 
-  // Get content preview (first 120 characters)
-  const contentPreview =
-    post.content.length > 120
-      ? post.content.substring(0, 120) + "..."
-      : post.content;
-
   const postLink = `/post/${post._id}`;
 
   // Get category gradient
@@ -86,11 +80,6 @@ export function PostCard({ post }: { post: Post }) {
             {post.title}
           </h3>
         </Link>
-
-        {/* Content Preview */}
-        <p className="line-clamp-3 flex-1 text-sm text-muted-foreground">
-          {contentPreview}
-        </p>
 
         {/* Footer with Date */}
         <div className="flex items-center justify-between border-t border-border pt-3 mt-auto">

@@ -61,8 +61,12 @@ export const updateUser = async (req: AuthRequest, res: Response): Promise<Respo
   }
 
   try {
-    const { password: _, ...dataUpdated } = await updateUserData(user, dataToUpdate)
-    return res.status(200).json({ message: 'User updated successfully.', user: dataUpdated })
+    const { _id, username, email } = await updateUserData(user, dataToUpdate)
+    return res.status(200).json({ message: 'User updated successfully.', user:  {
+      username,
+      id: _id,
+      email
+    } })
   } catch (error) {
     console.error(error)
     return res.status(500).json('Server internal error.')

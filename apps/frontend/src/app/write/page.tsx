@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RichTextEditor } from "@/components/RichTextEditor";
-import { createPost } from "@/lib/services/posts";
+import { createPost, getPostById, updatePost } from "@/lib/services/posts";
 import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Send } from "lucide-react";
 import Image from "next/image";
@@ -40,6 +40,9 @@ export default function WritePage() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const editPostId = searchParams.get("edit");
+  const isEditMode = Boolean(editPostId);
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postFormSchema),
@@ -53,8 +56,10 @@ export default function WritePage() {
 
   const watchedImage = form.watch("image");
 
-  // Load draft from localStorage on mount
+  // Load draft from localStorage on mount (only in create mode)
   useEffect(() => {
+    if (isEditMode) return;
+
     if (typeof window !== "undefined") {
       const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
       if (savedDraft) {
@@ -75,10 +80,12 @@ export default function WritePage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [form, isEditMode]);
 
-  // Save draft to localStorage on change
+  // Save draft to localStorage on change (only in create mode)
   useEffect(() => {
+    if (isEditMode) return;
+
     const subscription = form.watch((value: Partial<Omit<PostFormData, 'image'>>) => {
       if (typeof window !== "undefined") {
         // Only save if there's actual content (title or content)
@@ -100,7 +107,34 @@ export default function WritePage() {
         (subscription as { unsubscribe: () => void }).unsubscribe();
       }
     };
-  }, [form]);
+  }, [form, isEditMode]);
+
+  // Load post data when editing
+  useEffect(() => {
+    if (!isEditMode || !editPostId) return;
+
+    const loadPost = async () => {
+      try {
+        const post = await getPostById(editPostId);
+        form.reset({
+          title: post.title || "",
+          content: post.content || "",
+          category: post.category || "technology",
+          image: null,
+        });
+
+        if (post.image?.url) {
+          setImagePreview(post.image.url);
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to load post data"
+        );
+      }
+    };
+
+    void loadPost();
+  }, [isEditMode, editPostId, form]);
 
   // Handle image preview and validation
   useEffect(() => {
@@ -144,7 +178,9 @@ export default function WritePage() {
 
   const onSubmit = async (data: PostFormData) => {
     if (!isAuthenticated) {
-      toast.error("You must be logged in to create a post");
+      toast.error(
+        `You must be logged in to ${isEditMode ? "update" : "create"} a post`
+      );
       return;
     }
 
@@ -172,22 +208,28 @@ export default function WritePage() {
         formData.append("image", data.image);
       }
 
-      await createPost(formData);
+      if (isEditMode && editPostId) {
+        await updatePost(editPostId, formData);
+        toast.success("Post updated successfully!");
+        router.push(`/post/${editPostId}`);
+      } else {
+        await createPost(formData);
 
-      // Clear draft and reset form only after successful submission
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(DRAFT_STORAGE_KEY);
+        // Clear draft and reset form only after successful submission
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(DRAFT_STORAGE_KEY);
+        }
+        form.reset({
+          title: "",
+          content: "",
+          category: "technology",
+          image: null,
+        });
+        setImagePreview(null);
+
+        toast.success("Post created successfully!");
+        router.push("/");
       }
-      form.reset({
-        title: "",
-        content: "",
-        category: "technology",
-        image: null,
-      });
-      setImagePreview(null);
-      
-      toast.success("Post created successfully!");
-      router.push("/");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to create post"
@@ -204,9 +246,13 @@ export default function WritePage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Write a New Post</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {isEditMode ? "Edit Post" : "Write a New Post"}
+        </h1>
         <p className="text-muted-foreground">
-          Share your thoughts with the world
+          {isEditMode
+            ? "Update your post and keep your content fresh"
+            : "Share your thoughts with the world"}
         </p>
       </div>
 
@@ -345,7 +391,13 @@ export default function WritePage() {
           <div className="flex gap-4 pt-4">
             <Button variant="outline" type="submit" disabled={isSubmitting}>
               <Send className="mr-2 h-4 w-4" />
-              {isSubmitting ? "Publishing..." : "Publish Post"}
+              {isSubmitting
+                ? isEditMode
+                  ? "Saving changes..."
+                  : "Publishing..."
+                : isEditMode
+                  ? "Save Changes"
+                  : "Publish Post"}
             </Button>
           </div>
         </form>
