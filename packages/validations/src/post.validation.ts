@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { imageFileSchema } from './image.validation.ts'
+import { imageFileSchema } from './image.validation'
 
 export const categorySchema = z.enum([
   'technology',

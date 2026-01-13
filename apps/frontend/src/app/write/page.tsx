@@ -20,7 +20,7 @@ import { createPost, getPostById, updatePost } from "@/lib/services/posts";
 import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Send } from "lucide-react";
 import Image from "next/image";
 
@@ -35,7 +35,7 @@ const CATEGORIES = [
   { value: "food", label: "Food" },
 ] as const;
 
-export default function WritePage() {
+function WritePageContent() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -403,5 +403,20 @@ export default function WritePage() {
         </form>
       </Form>
     </div>
+  );
+}
+
+export default function WritePage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Write a New Post</h1>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <WritePageContent />
+    </Suspense>
   );
 }
