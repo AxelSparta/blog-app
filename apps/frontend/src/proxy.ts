@@ -7,6 +7,8 @@ export function proxy(request: NextRequest) {
 
   const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/write")
 
+  console.log(token, isProtectedRoute)
+
   if (!token && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
