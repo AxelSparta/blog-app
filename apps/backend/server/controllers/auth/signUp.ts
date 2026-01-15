@@ -38,8 +38,7 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
         httpOnly: true,
         sameSite: 'none',
         secure: true,
-        path: '/',
-        domain: DOMAIN
+        path: '/'
       })
       .status(201)
       .json({
