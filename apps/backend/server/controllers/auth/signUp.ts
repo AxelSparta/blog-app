@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { JWT_KEY } from '../../envConfig.js'
+import { JWT_KEY, ORIGIN } from '../../envConfig.js'
 import { createUser, getUserByEmail, getUserByUsername } from '../../models/user.model.js'
 import { validateUserSignUp } from '@repo/validations'
 
@@ -36,9 +36,10 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
       .cookie('access_token', token, {
         maxAge: 1000 * 60 * 60 * 24 * 14,
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
         secure: true,
-        path: '/'
+        path: '/',
+        domain: ORIGIN
       })
       .status(201)
       .json({

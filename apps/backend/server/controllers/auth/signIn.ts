@@ -1,9 +1,8 @@
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { JWT_KEY } from '../../envConfig.js'
+import { JWT_KEY, ORIGIN } from '../../envConfig.js'
 import { getUserByUsername } from '../../models/user.model.js'
 import { validateUserSignIn } from '@repo/validations'
-import type { AuthRequest } from '../../middlewares/isAuth.js'
 
 export const signIn = async (req: Request, res: Response): Promise<Response | void> => {
   const { success, errors, data } = validateUserSignIn(req.body)
@@ -35,9 +34,10 @@ export const signIn = async (req: Request, res: Response): Promise<Response | vo
       .cookie('access_token', token, {
         maxAge: 1000 * 60 * 60 * 24 * 14,
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
         secure: true,
-        path: "/"
+        path: "/",
+        domain: ORIGIN
       })
       .status(200)
       .json({
