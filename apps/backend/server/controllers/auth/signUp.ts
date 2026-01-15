@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { JWT_KEY, ORIGIN } from '../../envConfig.js'
+import { DOMAIN, JWT_KEY, ORIGIN } from '../../envConfig.js'
 import { createUser, getUserByEmail, getUserByUsername } from '../../models/user.model.js'
 import { validateUserSignUp } from '@repo/validations'
 
@@ -39,7 +39,7 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
         sameSite: 'none',
         secure: true,
         path: '/',
-        domain: ORIGIN
+        domain: DOMAIN
       })
       .status(201)
       .json({
