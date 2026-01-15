@@ -4,16 +4,19 @@ import type { NextRequest } from "next/server"
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value
+  const { pathname } = request.nextUrl
 
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/write")
+  const isAuthRoute =
+    pathname.startsWith("/login") || pathname.startsWith("/register")
 
-  console.log(token, isProtectedRoute)
+  const isProtectedRoute =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/write")
 
   if (!token && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
-  if (token && !isProtectedRoute) {
+  if (token && isAuthRoute) {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
