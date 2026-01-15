@@ -3,7 +3,7 @@ import { type Request, type Response } from 'express'
 export const logout = (req: Request, res: Response): Response => {
   return res
     .clearCookie('access_token', {
-      sameSite: 'none',
+      sameSite: 'lax',
       secure: true
     })
     .status(200)

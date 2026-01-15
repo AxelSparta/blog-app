@@ -35,8 +35,9 @@ export const signIn = async (req: Request, res: Response): Promise<Response | vo
       .cookie('access_token', token, {
         maxAge: 1000 * 60 * 60 * 24 * 14,
         httpOnly: true,
-        sameSite: 'none',
-        secure: true
+        sameSite: 'lax',
+        secure: true,
+        path: "/"
       })
       .status(200)
       .json({
