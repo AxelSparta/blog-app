@@ -1,8 +1,8 @@
+import { validateUserSignUp } from '@repo/validations'
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { DOMAIN, JWT_KEY, ORIGIN } from '../../envConfig.js'
 import { createUser, getUserByEmail, getUserByUsername } from '../../models/user.model.js'
-import { validateUserSignUp } from '@repo/validations'
 
 export const signUp = async (req: Request, res: Response): Promise<Response | void> => {
   const { success, data, errors } = validateUserSignUp(req.body)
@@ -38,7 +38,8 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
         httpOnly: true,
         sameSite: 'none',
         secure: true,
-        path: '/'
+        path: '/',
+        domain: DOMAIN,
       })
       .status(201)
       .json({

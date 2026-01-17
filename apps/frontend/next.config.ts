@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://res.cloudinary.com/**')],
   },
-  transpilePackages: ['@repo/validations'],
+  transpilePackages: ['@repo/validations']
 };
 
 export default nextConfig;
