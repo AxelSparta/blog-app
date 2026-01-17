@@ -1,7 +1,7 @@
 import { validateUserSignUp } from '@repo/validations'
 import { type Request, type Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { DOMAIN, JWT_KEY, ORIGIN } from '../../envConfig.js'
+import { JWT_KEY } from '../../envConfig.js'
 import { createUser, getUserByEmail, getUserByUsername } from '../../models/user.model.js'
 
 export const signUp = async (req: Request, res: Response): Promise<Response | void> => {
@@ -38,8 +38,7 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
         httpOnly: true,
         sameSite: 'none',
         secure: true,
-        path: '/',
-        domain: DOMAIN,
+        path: '/'
       })
       .status(201)
       .json({
