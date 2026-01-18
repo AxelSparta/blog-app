@@ -2,73 +2,78 @@
 
 A full-stack blog application built with Next.js, Express, MongoDB, and TypeScript. This monorepo project features user authentication, rich text editing, image uploads, post management, and a modern, responsive UI with dark mode support.
 
-## 🚀 Features
+## 🎯 Core Functions
 
-### Authentication & User Management
-- **User Registration & Login**: Secure authentication with JWT tokens stored in HTTP-only cookies
-- **User Profile Management**: Update username, email, password, and avatar
+### 1. User Authentication & Account Management
+- **User Registration**: Create new accounts with username, email, and password
+- **User Login**: Authenticate users with JWT tokens via Authorization headers
+- **User Logout**: Clear authentication and session data
+- **Profile Management**: Update username, email, and password
+- **Avatar Management**: Upload and manage user profile pictures via Cloudinary
+- **Account Deletion**: Delete user account and associated data
 - **Password Security**: Bcrypt hashing with validation (8-30 chars, uppercase, lowercase, number required)
-- **Username Validation**: Regex-based validation (3-30 chars, starts with letter, no consecutive underscores/dots)
-- **Session Management**: Cookie-based authentication with logout functionality
 
-### Post Management
-- **Create Posts**: Rich text editor with formatting options (bold, italic, headings, lists, quotes, code blocks, links)
-- **Edit Posts**: Update existing posts with pre-filled form data
-- **Delete Posts**: Confirmation dialog before deletion
-- **View Posts**: Individual post pages with full content display
-- **Post Filtering**: Filter by category, user, or combination of both
-- **Categories**: Technology, Art, Science, Cinema, Design, Food
+### 2. Blog Post Management
+- **Create Posts**: Write new blog posts with rich text formatting and optional featured images
+- **Read/View Posts**: Display posts in a feed or individual detail view
+- **Update Posts**: Edit existing posts with content and image updates
+- **Delete Posts**: Remove posts with confirmation dialog
+- **Post Filtering**: Filter posts by category, author, or combination of both
+- **Post Categories**: Organize posts into 6 categories (Technology, Art, Science, Cinema, Design, Food)
 
-### Content Features
-- **Rich Text Editor**: TipTap-based WYSIWYG editor with:
-  - Headings (H1, H2, H3)
-  - Bold, italic, underline, strikethrough
-  - Ordered and unordered lists
-  - Blockquotes
-  - Code blocks and inline code
-  - Links with automatic `rel="noopener noreferrer"` and `target="_blank"`
-  - Horizontal rules
-- **HTML Sanitization**: Server-side sanitization using `sanitize-html` to prevent XSS attacks
-- **Content Validation**: 
-  - Title: 3-200 characters
-  - Content: 20-3000 characters (excluding HTML tags)
-  - Category validation
+### 3. Rich Text Editing & Content Formatting
+- **WYSIWYG Editor**: TipTap-based editor with real-time preview
+- **Text Formatting**: Bold, italic, underline, strikethrough
+- **Heading Levels**: H1, H2, H3 support
+- **Lists**: Ordered and unordered lists
+- **Code Blocks**: Display code with syntax highlighting support
+- **Blockquotes**: Format quoted text
+- **Links**: Insert hyperlinks with automatic security attributes
+- **Horizontal Rules**: Add visual separators
+- **HTML Sanitization**: Server-side sanitization to prevent XSS attacks
 
-### Image Management
-- **Image Upload**: Cloudinary integration for image hosting
-- **Image Validation**: 
-  - File type validation (PNG, JPG, JPEG)
-  - Size limit (2MB max)
-  - Automatic cleanup of old images when updating/deleting posts
-- **Image Preview**: Real-time preview before upload
-- **Avatar Support**: User profile avatars with Cloudinary storage
+### 4. Image Upload & Management
+- **Image Upload**: Upload images to Cloudinary during post creation/editing
+- **Image Validation**: Validate file type (PNG, JPG, JPEG) and size (max 2MB)
+- **Image Preview**: Real-time preview before uploading
+- **Automatic Cleanup**: Remove old images when posts are deleted or updated
+- **User Avatars**: Support for user profile avatars
 
-### User Interface
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Dark Mode**: Theme switching with `next-themes`
-- **Toast Notifications**: User feedback using Sonner
-- **Loading States**: Skeleton loaders and loading indicators
-- **Form Validation**: Client-side validation with React Hook Form and Zod
-- **Draft Auto-save**: LocalStorage-based draft saving for new posts
-- **Modern UI Components**: Radix UI-based component library
+### 5. User Dashboard & Profile
+- **User Profile Tab**: View and update user information (username, email, password, avatar)
+- **User Posts Tab**: View, edit, or delete all user-created posts
+- **Post Statistics**: Display total post count for the user
+- **Quick Actions**: Fast access to post management (view, edit, delete)
 
-### Dashboard
-- **Profile Tab**: 
-  - View and update user information
-  - Change avatar with preview
-  - Update password (requires current password)
-- **Posts Tab**: 
-  - View all user posts in a grid layout
-  - Quick actions: View, Edit, Delete
-  - Post count display
-  - Empty state with call-to-action
+### 6. Content Discovery & Navigation
+- **Home Feed**: Browse all blog posts in a grid/card layout
+- **Post Detail View**: Read full post content with metadata
+- **Category Filtering**: Filter posts by content category
+- **Author Filtering**: View all posts by a specific author
+- **Search Functionality**: Find posts and users
 
-### Security Features
-- **XSS Protection**: HTML sanitization on server-side
-- **CSRF Protection**: Cookie-based authentication
-- **Input Validation**: Comprehensive Zod schemas for all inputs
-- **Authorization**: Middleware to protect routes (only post owners can edit/delete)
-- **Password Hashing**: Bcrypt with salt rounds
+### 7. User Interface & Experience
+- **Responsive Design**: Mobile-first design that works on all devices
+- **Dark Mode**: Toggle between light and dark themes
+- **Toast Notifications**: User feedback for actions (success, error, info)
+- **Loading States**: Skeleton screens and loading indicators
+- **Form Validation**: Client-side validation with real-time error messages
+- **Draft Auto-save**: Automatically save post drafts to localStorage
+
+### 8. Security & Data Protection
+- **JWT Authentication**: Token-based authentication via Authorization headers
+- **Password Hashing**: Bcrypt encryption with salt rounds
+- **Input Validation**: Comprehensive Zod schemas on client and server
+- **XSS Prevention**: HTML sanitization on the server
+- **Authorization Checks**: Verify user ownership before allowing edits/deletes
+- **CORS Protection**: Configured for frontend origin
+- **File Validation**: Validate image type and size before upload
+
+### 9. Data Validation
+- **User Validation**: Username (3-30 chars), email format, password strength
+- **Post Validation**: Title (3-200 chars), content (20-3000 chars), category enum
+- **Image Validation**: File type and size restrictions
+- **Form Validation**: Real-time client-side validation with error messages
 
 ## 🛠️ Tech Stack
 
