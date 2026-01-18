@@ -31,15 +31,10 @@ export const signIn = async (req: Request, res: Response): Promise<Response | vo
     })
 
     return res
-      .cookie('access_token', token, {
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true
-      })
       .status(200)
       .json({
         message: 'Sign in successful.',
+        token,
         user: {
           id: user._id,
           username: user.username,

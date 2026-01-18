@@ -29,7 +29,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -62,6 +61,7 @@ export default function DashboardPage() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
   const login = useAuthStore((state) => state.login);
+  const token = useAuthStore((state) => state.token);
 
   const [activeTab, setActiveTab] = useState<"profile" | "posts">("profile");
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -95,8 +95,8 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         const [dashboardData, posts] = await Promise.all([
-          getUserDashboard(),
-          getUserPosts(user.id),
+          getUserDashboard(token!),
+          getUserPosts(user.id, token!),
         ]);
 
         setUserData(dashboardData);
@@ -164,7 +164,7 @@ export default function DashboardPage() {
         formData.append("avatar", data.avatar);
       }
 
-      const result = await updateUser(formData);
+      const result = await updateUser(formData, token!);
 
       // Update auth store
       if (result.user) {
@@ -173,11 +173,11 @@ export default function DashboardPage() {
           username: result.user.username || userData?.username || "",
           email: result.user.email || userData?.email || "",
           image: result.user.avatar?.url || null,
-        });
+        }, token!);
       }
 
       // Refresh user data
-      const dashboardData = await getUserDashboard();
+      const dashboardData = await getUserDashboard(token!);
       setUserData(dashboardData);
       if (dashboardData.avatar?.url) {
         setAvatarPreview(dashboardData.avatar.url);
@@ -203,7 +203,7 @@ export default function DashboardPage() {
   const handleDeletePost = async (postId: string) => {
 
     try {
-      await deletePost(postId);
+      await deletePost(postId, token!);
       setUserPosts(userPosts.filter((post) => post._id !== postId));
       toast.success("Post deleted successfully!");
     } catch (error) {

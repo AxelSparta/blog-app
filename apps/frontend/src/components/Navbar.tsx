@@ -20,7 +20,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { logoutUser } from "@/lib/services/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +44,6 @@ export function Navbar() {
   const handleLogout = async () => {
     try {
       // Add logout logic here
-      await logoutUser();
       logout();
       toast.success("Logged out successfully");
       router.push("/");

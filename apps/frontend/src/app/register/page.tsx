@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { registerUser } from "@/lib/services/auth";
 import { useAuthStore } from "@/store/auth.store";
 import { toast } from "sonner";
@@ -26,9 +26,16 @@ import type { z } from "zod";
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ message: "" });
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const router = useRouter();
 
   const login = useAuthStore((state) => state.login);
+
+  useEffect(() => {
+      if (isAuthenticated) {
+        router.push("/");
+      }
+    }, [isAuthenticated, router]);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof signUpFormSchema>>({
@@ -53,8 +60,8 @@ export default function RegisterPage() {
 
     try {
       const loginRes = await registerUser(username, email, password);
-      const { id, message } = loginRes;
-      login({ id, username, email });
+      const { id, message, token } = loginRes;
+      login({ id, username, email }, token);
       toast.success(message);
       router.push("/");
     } catch (err: unknown) {

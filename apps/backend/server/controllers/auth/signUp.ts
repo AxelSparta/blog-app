@@ -33,16 +33,11 @@ export const signUp = async (req: Request, res: Response): Promise<Response | vo
       expiresIn: '14d'
     })
     return res
-      .cookie('access_token', token, {
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true
-      })
       .status(201)
       .json({
         id: newUserId,
-        message: 'User created successfully.'
+        message: 'User created successfully.',
+        token
       })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'

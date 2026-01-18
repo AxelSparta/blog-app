@@ -13,7 +13,8 @@ export const isAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { access_token: accessToken } = req.cookies
+    const accessToken = req.headers.authorization?.split(' ')[1]
+
     if (!accessToken) {
       res.status(401).json('No token was provided.')
       return
@@ -28,10 +29,6 @@ export const isAuth = async (
 
     if (!user) {
       res
-        .clearCookie('access_token', {
-          sameSite: 'none',
-          secure: true
-        })
         .status(404)
         .json('User not found.')
       return
@@ -40,10 +37,6 @@ export const isAuth = async (
     next()
   } catch (error) {
     res
-      .clearCookie('access_token', {
-        sameSite: 'none',
-        secure: true
-      })
       .status(500)
       .json('Internal server error.')
   }

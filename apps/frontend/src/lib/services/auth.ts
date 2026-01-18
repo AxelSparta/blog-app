@@ -8,7 +8,6 @@ export async function registerUser(
 ) {
   const response = await fetch(`${API_URL}/api/auth/signup`, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -26,7 +25,6 @@ export async function registerUser(
 export async function loginUser(username: string, password: string) {
   const response = await fetch(`${API_URL}/api/auth/signin`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
@@ -37,24 +35,30 @@ export async function loginUser(username: string, password: string) {
   return await response.json();
 }
 
-export async function logoutUser() {
-  const response = await fetch(`${API_URL}/api/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
+// export async function logoutUser() {
+//   const response = await fetch(`${API_URL}/api/auth/logout`, {
+//     method: "POST"
+//   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData);
+//   if (!response.ok) {
+//     const errorData = await response.json();
+//     throw new Error(errorData);
+//   }
+
+//   return await response.json();
+// }
+
+export async function getUserDashboard(token: string) {
+  
+
+  if (!token) {
+    throw new Error("No token found");
   }
-
-  return await response.json();
-}
-
-export async function getUserDashboard() {
   const response = await fetch(`${API_URL}/api/user`, {
     method: "GET",
-    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {
@@ -67,11 +71,15 @@ export async function getUserDashboard() {
   return await response.json();
 }
 
-export async function updateUser(formData: FormData) {
+export async function updateUser(formData: FormData, token: string) {
+  
   const response = await fetch(`${API_URL}/api/user`, {
     method: "PUT",
     credentials: "include",
     body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!response.ok) {

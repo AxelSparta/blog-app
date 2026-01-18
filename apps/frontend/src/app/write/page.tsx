@@ -38,6 +38,7 @@ const CATEGORIES = [
 function WritePageContent() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.token);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -79,7 +80,7 @@ function WritePageContent() {
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [form, isEditMode]);
 
   // Save draft to localStorage on change (only in create mode)
@@ -209,11 +210,11 @@ function WritePageContent() {
       }
 
       if (isEditMode && editPostId) {
-        await updatePost(editPostId, formData);
+        await updatePost(editPostId, formData, token!);
         toast.success("Post updated successfully!");
         router.push(`/post/${editPostId}`);
       } else {
-        await createPost(formData);
+        await createPost(formData, token!);
 
         // Clear draft and reset form only after successful submission
         if (typeof window !== "undefined") {
