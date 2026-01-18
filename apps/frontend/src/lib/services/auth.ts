@@ -1,11 +1,10 @@
 import { config } from "@/lib/config";
-
 const { API_URL } = config;
 
 export async function registerUser(
   username: string,
   email: string,
-  password: string
+  password: string,
 ) {
   const response = await fetch(`${API_URL}/api/auth/signup`, {
     method: "POST",
@@ -60,7 +59,9 @@ export async function getUserDashboard() {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(typeof errorData === "string" ? errorData : "Failed to fetch user data");
+    throw new Error(
+      typeof errorData === "string" ? errorData : "Failed to fetch user data",
+    );
   }
 
   return await response.json();
@@ -75,7 +76,9 @@ export async function updateUser(formData: FormData) {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(typeof errorData === "string" ? errorData : "Failed to update user");
+    throw new Error(
+      typeof errorData === "string" ? errorData : "Failed to update user",
+    );
   }
 
   return await response.json();

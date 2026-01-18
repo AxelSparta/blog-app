@@ -4,9 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
-    remotePatterns: [new URL('https://res.cloudinary.com/**')],
+    remotePatterns: [new URL("https://res.cloudinary.com/**")],
   },
-  transpilePackages: ['@repo/validations']
+  transpilePackages: ["@repo/validations"],
 };
 
 export default nextConfig;

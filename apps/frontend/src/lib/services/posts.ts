@@ -1,7 +1,5 @@
 import { config } from "@/lib/config";
-
 const { API_URL } = config;
-
 
 export async function getPostById(postId: string) {
   const response = await fetch(`${API_URL}/api/posts?idPost=${postId}`)
