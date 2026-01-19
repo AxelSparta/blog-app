@@ -1,61 +1,64 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 // Backend schema (for server-side validation with express-fileupload)
 export const imageSchema = (maxSizeInMb: number) =>
   z
     .object({
-      mimetype: z.enum(['image/png', 'image/jpeg', 'image/jpg'], {
-        message: 'Image must be a png, jpg or jpeg.'
+      mimetype: z.enum(["image/png", "image/jpeg", "image/jpg"], {
+        message: "Image must be a png, jpg or jpeg.",
       }),
-      size: z.number()
+      size: z.number(),
     })
-    .refine(file => file.size <= maxSizeInMb * 1024 * 1024, {
+    .refine((file) => file.size <= maxSizeInMb * 1024 * 1024, {
       message: `The image size must be less than ${maxSizeInMb}MB.`,
-      path: ['size']
-    })
+      path: ["size"],
+    });
 
 // Frontend schema (for File objects in the browser)
 export const imageFileSchema = (maxSizeInMb: number) =>
   z
-    .instanceof(File, { message: 'Please select an image file.' })
+    .any()
+    .refine((file) => file?.size !== undefined, {
+      message: "Please select an image file.",
+    })
     .refine(
-      (file) => ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type),
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
       {
-        message: 'Image must be a PNG, JPG, or JPEG file.'
-      }
+        message: "Image must be a PNG, JPG, or JPEG file.",
+      },
     )
-    .refine(
-      (file) => file.size <= maxSizeInMb * 1024 * 1024,
-      {
-        message: `Image size must be less than ${maxSizeInMb}MB.`
-      }
-    )
+    .refine((file) => file.size <= maxSizeInMb * 1024 * 1024, {
+      message: `Image size must be less than ${maxSizeInMb}MB.`,
+    });
 
 export const imageValidation = (image: any, maxSizeInMb: number) => {
-  const parseResult = imageSchema(maxSizeInMb).safeParse(image)
+  const parseResult = imageSchema(maxSizeInMb).safeParse(image);
   if (!parseResult.success) {
     return {
       error: true,
-      message: parseResult.error.flatten().fieldErrors
-    }
+      message: parseResult.error.flatten().fieldErrors,
+    };
   }
-  return { error: false }
-}
+  return { error: false };
+};
 
 // Frontend validation function for File objects
-export const validateImageFile = (file: File | null, maxSizeInMb: number): { error: boolean; message?: string } => {
+export const validateImageFile = (
+  file: File | null,
+  maxSizeInMb: number,
+): { error: boolean; message?: string } => {
   if (!file) {
-    return { error: false }
+    return { error: false };
   }
 
-  const result = imageFileSchema(maxSizeInMb).safeParse(file)
+  const result = imageFileSchema(maxSizeInMb).safeParse(file);
   if (!result.success) {
-    const issues = result.error.issues
-    const firstError = issues[0]
+    const issues = result.error.issues;
+    const firstError = issues[0];
     return {
       error: true,
-      message: firstError?.message || 'Invalid image file.'
-    }
+      message: firstError?.message || "Invalid image file.",
+    };
   }
-  return { error: false }
-}
+  return { error: false };
+};
