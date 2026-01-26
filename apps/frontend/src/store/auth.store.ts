@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>()(
         name: "auth-storage",
       }
     ), {
-      enabled: true
+      enabled: false
     }
   )
 );

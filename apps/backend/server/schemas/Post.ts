@@ -6,7 +6,7 @@ export interface IPost extends Document {
   image?: {
     url?: string
     public_id?: string
-  }
+  } | null
   createdAt: Date
   userId: string
   category: string

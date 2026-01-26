@@ -22,12 +22,12 @@ export const imageFileSchema = (maxSizeInMb: number) =>
       message: "Please select an image file.",
     })
     .refine(
-      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file.type),
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file?.type),
       {
         message: "Image must be a PNG, JPG, or JPEG file.",
       },
     )
-    .refine((file) => file.size <= maxSizeInMb * 1024 * 1024, {
+    .refine((file) => file?.size <= maxSizeInMb * 1024 * 1024, {
       message: `Image size must be less than ${maxSizeInMb}MB.`,
     });
 
